@@ -1,0 +1,241 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Melodytree: every song draws its own lightning</title>
+<meta name="description" content="Drop a song. A search tree grows with it, three voices light three branches, and when the song ends you keep its signature. Runs in your browser; your music never leaves your device.">
+<meta property="og:title" content="Melodytree: every song draws its own lightning">
+<meta property="og:description" content="Drop a song and a search tree grows with it. Runs in your browser; your music never leaves your device.">
+<meta property="og:image" content="https://inhabitants.github.io/melodytree/media/og.jpg">
+<meta name="twitter:card" content="player">
+<meta name="twitter:title" content="Melodytree">
+<meta name="twitter:description" content="Play a song and a tree grows with it, right here in the post.">
+<meta name="twitter:player" content="https://inhabitants.github.io/melodytree/?de=x">
+<meta name="twitter:player:width" content="480">
+<meta name="twitter:player:height" content="480">
+<meta name="twitter:image" content="https://inhabitants.github.io/melodytree/media/card.jpg">
+<meta name="twitter:image:alt" content="A tree of thin branches on black, one path lit in ember, under the name Melodytree">
+<meta name="theme-color" content="#0b0b0d">
+<!-- dentro de iframe (o post do X, o Telegram Web) ou com ?de=x, a página vira cartão: decidido antes do
+     primeiro quadro pra não piscar o encarte -->
+<script>if (window.top !== window.self || /[?&]de=x\b/.test(location.search)) document.documentElement.classList.add("cartao");</script>
+<link rel="icon" href="data:,">
+<link rel="preload" href="fonts/cormorant-garamond-latin.woff2" as="font" type="font/woff2" crossorigin>
+<style>
+  @font-face { font-family: "Cormorant Garamond"; src: url("fonts/cormorant-garamond-latin.woff2") format("woff2"); font-weight: 300 700; font-style: normal; font-display: swap; }
+  @font-face { font-family: "Cormorant Garamond"; src: url("fonts/cormorant-garamond-italic-latin.woff2") format("woff2"); font-weight: 300 700; font-style: italic; font-display: swap; }
+
+  /* a paleta é a do motor (lib/arvore-motor.js): a página emoldura a árvore, não compete com ela.
+     A brasa só aparece onde quer dizer "caminho aceso". */
+  :root {
+    --noite: #0b0b0d; --osso: #ece6da; --nevoa: #a29c93; --galho: #6e6a63; --brasa: #e0583a;
+    --serifa: "Cormorant Garamond", Georgia, "Times New Roman", serif;
+    color-scheme: dark;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; background: var(--noite); color: var(--osso); font: 400 19px/1.55 var(--serifa); overflow: hidden; -webkit-font-smoothing: antialiased; }
+  /* a árvore é tocável: clique acende os galhos e soa uma nota, e arrastar dedilha sem rolar a página.
+     O cursor é a gota antes de cair: um ponto sobre um anel achatado, o mesmo desenho do toque */
+  canvas { position: fixed; inset: 0; width: 100vw; height: 100vh; height: 100dvh; display: block; touch-action: none;
+    cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='28' height='28'%3E%3Cellipse cx='14' cy='14' rx='9' ry='2.9' fill='none' stroke='%23ece6da' stroke-opacity='.55'/%3E%3Ccircle cx='14' cy='14' r='1.7' fill='%23ece6da'/%3E%3C/svg%3E") 14 14, pointer; }
+  a { color: inherit; text-decoration-color: var(--galho); text-underline-offset: 4px; }
+  a:hover { text-decoration-color: var(--osso); }
+  :focus-visible { outline: 1px solid var(--osso); outline-offset: 4px; }
+  p { margin: 0; text-wrap: pretty; }
+  h1, h2, h3, .linha { text-wrap: balance; }
+
+  /* ---------- a entrada: o encarte, que rola por cima da árvore ---------- */
+  .porta { position: fixed; inset: 0; transition: opacity .6s ease; background: rgba(11, 11, 13, .86); -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px); }
+  .porta.some { opacity: 0; pointer-events: none; }
+  /* o texto some num degradê antes de chegar no EN/PT e na marca do canto, em vez de passar por baixo deles */
+  .rolo { position: absolute; inset: 0; overflow-y: auto; overflow-x: hidden; scrollbar-width: thin; scrollbar-color: #2a2a2e transparent; -webkit-mask-image: linear-gradient(transparent 36px, #000 78px); mask-image: linear-gradient(transparent 36px, #000 78px); }
+  .miolo { max-width: 1180px; margin: 0 auto; padding: 0 24px; }
+
+  /* topo: o nome do lado da árvore crescendo */
+  .topo { position: relative; min-height: 100svh; display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, .95fr); align-items: center; }
+  .capa { position: absolute; top: 0; right: 0; width: 52%; height: 100%; object-fit: cover; object-position: 50% 30%; -webkit-mask-image: linear-gradient(to right, transparent, #000 34%); mask-image: linear-gradient(to right, transparent, #000 34%); pointer-events: none; }
+  .apresenta { position: relative; padding: 96px 0 72px; max-width: 36rem; }
+  .nome { font-weight: 300; font-size: clamp(64px, 11.5vw, 156px); line-height: .9; letter-spacing: -.035em; margin: 0 0 28px -.04em; }
+  .linha { font-size: clamp(26px, 3.2vw, 36px); line-height: 1.15; margin-bottom: 18px; }
+  .sub { color: var(--nevoa); max-width: 31rem; margin-bottom: 36px; }
+  .soltar { display: flex; flex-direction: column; gap: 2px; width: 100%; max-width: 27rem; padding: 20px 24px; border: 1px solid #3a3834; cursor: pointer; transition: border-color .2s, background .2s; }
+  .soltar:hover, .soltar.cima { border-color: var(--osso); background: rgba(236, 230, 218, .04); }
+  .soltar:focus-within { outline: 1px solid var(--osso); outline-offset: 4px; }
+  .soltar strong { font-weight: 500; font-size: 23px; }
+  .soltar span { color: var(--nevoa); font-size: 16px; }
+  .outro { margin-top: 14px; font-size: 17px; color: var(--nevoa); }
+  .outro button, .faixas button { background: none; border: 0; padding: 0; color: var(--osso); font: inherit; cursor: pointer; text-decoration: underline; text-decoration-color: var(--galho); text-underline-offset: 4px; }
+  .outro button:hover { text-decoration-color: var(--osso); }
+  .discos { margin-top: 44px; }
+  .discos .rotulo { color: var(--nevoa); font-size: 17px; margin-bottom: 8px; }
+  .faixas { list-style: none; margin: 0; padding: 0; }
+  .faixas li { padding: 3px 0; }
+  .faixas button { text-decoration: none; font-size: 21px; color: var(--osso); transition: color .15s; text-align: left; }
+  .faixas button:hover { color: #fff; }
+  .faixas button.tocando { color: var(--brasa); }
+
+  /* as seções do encarte */
+  .bloco { padding: 112px 0 0; }
+  .bloco h2 { font-weight: 400; font-size: clamp(30px, 3.6vw, 42px); line-height: 1.1; letter-spacing: -.01em; margin: 0 0 12px; }
+  .bloco .lede { color: var(--nevoa); max-width: 34rem; }
+
+  /* a canção do começo ao fim: a linha é a faixa tocando, e o fim acende */
+  .cancao { list-style: none; margin: 48px 0 0; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0 40px; border-top: 1px solid var(--galho); }
+  .cancao li { position: relative; padding-top: 30px; }
+  .cancao li::before { content: ""; position: absolute; top: -5px; left: 0; width: 9px; height: 9px; border-radius: 50%; background: var(--noite); border: 1px solid var(--galho); }
+  .cancao li:last-child::before { background: var(--brasa); border-color: var(--brasa); box-shadow: 0 0 14px rgba(224, 88, 58, .7); }
+  .cancao h3 { font-weight: 500; font-size: 23px; margin: 0 0 8px; }
+  .cancao p { color: var(--nevoa); max-width: 22rem; }
+
+  /* três faixas, três raios: a assinatura é a peça, a legenda é a ficha do disco */
+  .assinaturas { margin: 48px 0 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 32px; }
+  .assinaturas figure { margin: 0; }
+  .assinaturas img { display: block; width: 100%; height: auto; aspect-ratio: 9 / 16; background: var(--noite); outline: 1px solid rgba(236, 230, 218, .08); }
+  .assinaturas figcaption { margin-top: 14px; font-size: 20px; line-height: 1.3; }
+  .assinaturas figcaption span { display: block; color: var(--nevoa); font-size: 17px; }
+  .assinaturas figcaption em { font-style: italic; }
+
+  /* créditos, como no encarte */
+  .creditos { margin: 40px 0 0; display: grid; grid-template-columns: 13rem minmax(0, 34rem); gap: 14px 32px; }
+  .creditos dt { color: var(--nevoa); }
+  .creditos dd { margin: 0; }
+  .fim { padding: 112px 0 calc(48px + env(safe-area-inset-bottom)); color: var(--galho); font-size: 16px; }
+
+  /* ---------- a barra: tocar e o nome à esquerda, o resto em texto baixo à direita ---------- */
+  .barra { position: fixed; left: 0; right: 0; bottom: 0; display: flex; flex-wrap: wrap; gap: 10px 28px; align-items: center; justify-content: space-between; padding: 32px 22px calc(18px + env(safe-area-inset-bottom)); background: linear-gradient(transparent, rgba(11, 11, 13, .75)); transition: opacity .5s ease; font-family: system-ui, -apple-system, "Segoe UI", sans-serif; }
+  .barra.quieta { opacity: 0; }
+  .barra .esq, .barra .dir { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 20px; min-width: 0; }
+  .barra .esq { gap: 14px; flex-wrap: nowrap; }
+  .barra button { background: none; border: 0; padding: 4px 0; color: var(--galho); font: inherit; font-size: 13px; cursor: pointer; transition: color .15s, border-color .15s; }
+  .barra button:hover { color: var(--osso); }
+  .barra .tocar { flex: none; width: 36px; height: 36px; border-radius: 50%; border: 1px solid #34343a; display: grid; place-items: center; color: var(--osso); padding: 0; }
+  .barra .tocar:hover { border-color: var(--galho); }
+  .barra .tocar svg { width: 14px; height: 14px; fill: currentColor; }
+  .barra .cheia svg { width: 15px; height: 15px; display: block; fill: none; stroke: currentColor; stroke-width: 1.5; }
+  .barra .liga::before { content: ""; display: inline-block; width: 6px; height: 6px; border-radius: 50%; border: 1px solid currentColor; margin-right: 7px; vertical-align: 1px; }
+  .barra .liga.aceso::before { background: currentColor; }
+  .barra .gravando { color: var(--brasa); }
+  .barra .faixa { color: var(--nevoa); font-size: 13px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .barra .dica { flex: none; color: var(--galho); font-size: 13px; }
+  .barra .dica::before { content: "·"; margin-right: 14px; }
+
+  .lingua, .assinado { position: fixed; top: 14px; z-index: 2; font: 13px/1 system-ui, -apple-system, "Segoe UI", sans-serif; color: var(--galho); text-decoration: none; }
+  .assinado { right: 16px; }
+  .assinado b { color: var(--osso); font-weight: 600; }
+  .lingua { left: 16px; }
+  .lingua a { color: var(--galho); text-decoration: none; margin-right: 8px; }
+  .lingua a.aqui { color: var(--osso); }
+  #arquivo { position: absolute; width: 1px; height: 1px; opacity: 0; }
+
+  @media (max-width: 860px) {
+    html, body { font-size: 18px; }
+    .topo { display: block; min-height: 0; }
+    .capa { width: 100%; height: 72svh; object-position: 50% 20%; -webkit-mask-image: linear-gradient(to bottom, #000 45%, transparent); mask-image: linear-gradient(to bottom, #000 45%, transparent); }
+    .apresenta { padding: 46svh 0 24px; }
+    .bloco { padding-top: 88px; }
+    .cancao { grid-template-columns: minmax(0, 1fr); border-top: 0; border-left: 1px solid var(--galho); margin-left: 4px; gap: 28px; }
+    .cancao li { padding: 0 0 0 24px; }
+    .cancao li::before { top: 9px; left: -5px; }
+    /* as três assinaturas viram uma fileira que se folheia de lado */
+    .assinaturas { grid-template-columns: none; grid-auto-flow: column; grid-auto-columns: 68%; gap: 18px; overflow-x: auto; scroll-snap-type: x mandatory; margin-right: -24px; padding-right: 24px; scrollbar-width: none; }
+    .assinaturas figure { scroll-snap-align: start; }
+    .creditos { grid-template-columns: minmax(0, 1fr); gap: 2px; }
+    .creditos dd { margin-bottom: 14px; }
+  }
+
+  /* ---------- o cartão: a árvore num quadrado de 480 ----------
+     Sai o encarte e o microfone (o iframe de fora não libera); as faixas de exemplo vêm primeiro porque são o toque
+     que funciona em qualquer aparelho. Salvar e gravar baixam arquivo, que o iframe pode barrar: vão pra página inteira. */
+  .cartao .bloco, .cartao .fim, .cartao .sub, .cartao .outro, .cartao #salvar, .cartao #gravar { display: none; }
+  .cartao .topo { display: block; min-height: 100svh; }
+  .cartao .capa { width: 100%; height: 100%; object-position: 50% 28%; opacity: .6; -webkit-mask-image: linear-gradient(to bottom, #000 40%, transparent); mask-image: linear-gradient(to bottom, #000 40%, transparent); }
+  .cartao .apresenta { display: flex; flex-direction: column; padding: 64px 0 24px; }
+  .cartao .nome { font-size: 54px; margin-bottom: 6px; }
+  .cartao .linha { font-size: 22px; margin-bottom: 18px; }
+  .cartao .discos { order: 1; margin: 0 0 16px; }
+  .cartao .discos .rotulo { font-size: 16px; margin-bottom: 4px; }
+  .cartao .faixas button { font-size: 19px; }
+  .cartao .soltar { order: 2; padding: 10px 14px; }
+  .cartao .soltar strong { font-size: 18px; }
+  .cartao .soltar span { font-size: 14px; }
+  .barra .inteira { display: none; padding: 4px 0; color: var(--galho); font-size: 13px; text-decoration: none; transition: color .15s; }
+  .barra .inteira:hover { color: var(--osso); }
+  .cartao .barra .inteira { display: inline; }
+</style>
+</head>
+<body>
+<canvas id="tela"></canvas>
+<nav class="lingua"><a href="?lang=en" data-l="en">EN</a><a href="?lang=pt" data-l="pt">PT</a></nav>
+
+<section class="porta" id="porta">
+ <div class="rolo">
+  <header class="topo">
+    <!-- a árvore crescendo com uma música de verdade: a peça é a prova -->
+    <video class="capa" id="capa" src="media/hero.mp4" poster="media/hero.jpg" muted loop playsinline autoplay preload="metadata" aria-hidden="true"></video>
+    <div class="miolo">
+      <div class="apresenta">
+        <h1 class="nome">Melodytree</h1>
+        <p class="linha" data-t="titulo"></p>
+        <p class="sub" data-t="sub"></p>
+        <label class="soltar" id="soltar">
+          <strong data-t="soltar"></strong>
+          <span data-t="soltarDica"></span>
+          <input id="arquivo" type="file" accept="audio/*">
+        </label>
+        <p class="outro"><span data-t="ou"></span> <button id="mic" data-t="microfone"></button></p>
+        <div class="discos" id="discos" hidden>
+          <p class="rotulo" data-t="ouvir"></p>
+          <ol class="faixas" id="faixas"></ol>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <div class="miolo">
+    <section class="bloco">
+      <h2 data-t="cancaoT"></h2>
+      <ol class="cancao">
+        <li><h3 data-t="comecoT"></h3><p data-t="comecoP"></p></li>
+        <li><h3 data-t="refraoT"></h3><p data-t="refraoP"></p></li>
+        <li><h3 data-t="fimT"></h3><p data-t="fimP"></p></li>
+      </ol>
+    </section>
+
+
+    <section class="bloco">
+      <h2 data-t="creditosT"></h2>
+      <dl class="creditos">
+        <dt data-t="ondeT"></dt><dd data-t="ondeP"></dd>
+        <dt data-t="musicaT"></dt><dd data-t="musicaP"></dd>
+        <dt data-t="fezT"></dt><dd><a href="https://www.sapiensinteticos.com/melodytree" rel="noopener">Sapiens Sintéticos</a></dd>
+        <dt data-t="codigoT"></dt><dd><a href="https://github.com/inhabitants/melodytree" rel="noopener">inhabitants/melodytree</a>, MIT</dd>
+      </dl>
+    </section>
+
+    <footer class="fim"></footer>
+  </div>
+ </div>
+</section>
+
+<div class="barra quieta" id="barra" hidden>
+  <div class="esq">
+    <button class="tocar" id="tocar"></button>
+    <span class="faixa" id="faixa"></span>
+    <span class="dica" id="dica" data-t="dica"></span>
+  </div>
+  <div class="dir">
+    <button class="liga aceso" id="fundo" data-t="profundidade"></button>
+    <button id="ver"></button>
+    <button id="salvar" data-t="salvar" data-dica="salvarDica"></button>
+    <button id="gravar"></button>
+    <button id="trocar" data-t="trocar"></button>
+    <a class="inteira" id="inteira" target="_blank" rel="noopener" data-t="inteira" data-dica="inteiraDica"></a>
+    <button class="cheia" id="cheia" data-dica="cheia"><svg viewBox="0 0 16 16"><path d="M2 6V2h4M10 2h4v4M14 10v4h-4M6 14H2v-4"/></svg></button>
+  </div>
+</div>
+<!-- faixa de outro domínio precisa de CORS: sem crossorigin o analisador ouve silêncio -->
+<audio id="audio" crossorigin="anonymous"></audio>
+<script type="module" src="./app.js"></script>
+</body>
+</html>

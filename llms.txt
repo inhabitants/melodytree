@@ -1,0 +1,31 @@
+# Melodytree
+
+> A music visualizer that runs entirely in the browser. Drop a song (or use the microphone) and a beam-search tree grows with it: three bolts follow the bass, mids and highs, the camera follows the song's shape, and the main bolt's path becomes a 4K PNG signature. Clicking the tree plays a soft note in the song's key. Static files only: no build step, no server code, no account, and the audio never leaves the device.
+
+## Run it
+
+- Serve the folder with any static server, because ES modules do not load from file://. Example: `npx serve .`
+- Open the printed address, then drop an audio file or press "microphone".
+
+## Customize
+
+- Playlist: create `musicas/lista.json` next to `index.html`, shaped `{ "faixas": [ { "titulo": "...", "arquivo": "https://...mp3", "lingua": "en" } ] }`. Up to five tracks show on the start screen (three in the embed). Audio on another domain must send CORS headers.
+- Embed: inside an iframe the page becomes a compact card automatically; `?de=x` forces the card for testing. Suggested iframe: 480x480 with `allow="autoplay; fullscreen"`.
+- X player card: the `og:image` and `twitter:*` meta tags in `index.html` point to the public demo. Change them to the address where the copy is hosted.
+- Signature mark: in `app.js`, `criarArvore({ marca: ["Bold", ".light"] })` stamps a name in the corner of the PNG; leave it out for no mark.
+- Language: `?lang=en` or `?lang=pt`; without it the browser language decides.
+
+## Files
+
+- `index.html`: page and styles.
+- `app.js`: start screen, control bar, PNG and video export, and the touch (note choice and synth).
+- `lib/arvore-motor.js`: the engine, with no DOM and no Web Audio. `criarArvore()` returns `passo(dt, sound, playing)`, `pintar({ g, W, H }, signature)` (g is a 2D context), `tocar(x, y, { W, H })` and the camera and path state.
+- `lib/escuta.js`: the listener. `criarSom(audioElement)` wires Web Audio and keeps `som.S` (bands, onsets, beats, pitch, presence) updated every frame.
+
+Identifiers and comments in the code are in Portuguese.
+
+## License
+
+Code: MIT (`LICENSE`). Fonts: Cormorant Garamond, SIL Open Font License (`fonts/OFL.txt`).
+
+Made at Sapiens Sintéticos: https://www.sapiensinteticos.com/melodytree
