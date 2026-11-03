@@ -69,8 +69,8 @@ screen shows one of each first.
 
 ## Embed it
 
-Inside an iframe the page turns into a compact card by itself: the tracks come
-first, the long intro goes, and saving and recording move behind a "full version"
+Inside an iframe the page turns into a compact card by itself: three tracks and
+the drop zone, no credits, and saving and recording move behind a "full version"
 link, because a download from inside an iframe can be blocked. `?de=x` forces the
 card outside an iframe, for testing.
 

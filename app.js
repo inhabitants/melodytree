@@ -8,13 +8,8 @@ import { criarArvore } from "./lib/arvore-motor.js";
 const TEXTOS = {
   en: {
     titulo: "Every song draws its own lightning.",
-    sub: "Drop a song and a search tree grows with it. The bass, the mids and the highs light three branches, and when the track ends, the lit path becomes its signature.",
-    soltar: "Drop a song here", soltarDica: "or click to choose a file. It stays on your device.",
-    ou: "or listen through the", microfone: "microphone", ouvir: "Or just listen",
-    cancaoT: "One song, start to finish",
-    comecoT: "At the start", comecoP: "The tree rises from the ground and goes looking for a way. Three bolts travel on separate branches, each one listening to a voice of the music.",
-    refraoT: "In the chorus", refraoP: "The camera reads the shape: it opens on the chorus, closes on the verse, holds on the break. When the sound stops, the tree stops where it is.",
-    fimT: "At the end", fimP: "The main bolt's path becomes the track's signature, a 4K PNG, portrait or landscape. You can record the video too.",
+    soltar: "Or drop your own song", soltarDica: "drag the file here or click. It stays on your device.",
+    ou: "or listen through the", microfone: "microphone", ouvir: "Pick one to listen",
     creditosT: "Credits",
     ondeT: "Where it runs", ondeP: "In your browser. Nothing to install.",
     musicaT: "Your music", musicaP: "Stays on your device. Nothing uploads, no account.",
@@ -22,18 +17,13 @@ const TEXTOS = {
     profundidade: "depth", tocar: "play", pausar: "pause", ouvindo: "listening",
     ver: "path", vivo: "live", salvar: "save", salvarDica: "save the signature as a 4K PNG", gravar: "record", parar: "stop", trocar: "another song", cheia: "fullscreen",
     semMic: "the browser did not give the microphone", semGravar: "this browser cannot record the canvas",
-    ouvirCartao: "Listen", soltarSua: "Or drop your own song", dica: "tap the tree",
+    dica: "tap the tree",
     inteira: "full version ↗", inteiraDica: "save the signature and record the video on the full page",
   },
   pt: {
     titulo: "Cada música desenha o próprio raio.",
-    sub: "Solta uma música e uma árvore de busca cresce com ela. O grave, o médio e o agudo acendem três galhos, e quando a faixa acaba o caminho aceso vira a assinatura dela.",
-    soltar: "Solta a música aqui", soltarDica: "ou clica pra escolher. Ela não sai do seu aparelho.",
-    ou: "ou ouve pelo", microfone: "microfone", ouvir: "Ou só ouvir",
-    cancaoT: "Uma música, do começo ao fim",
-    comecoT: "No começo", comecoP: "A árvore nasce do chão e sai procurando caminho. Três raios andam em galhos separados, cada um ouvindo uma voz da música.",
-    refraoT: "No refrão", refraoP: "A câmera lê a forma: abre no refrão, fecha no verso, segura na quebra. Se o som para, a árvore para onde está.",
-    fimT: "No fim", fimP: "O caminho do raio principal vira a assinatura da faixa, em PNG 4K, em pé ou deitado. Dá pra gravar o vídeo também.",
+    soltar: "Ou solta a sua", soltarDica: "arrasta o arquivo aqui ou clica. Ela não sai do seu aparelho.",
+    ou: "ou ouve pelo", microfone: "microfone", ouvir: "Escolhe uma pra ouvir",
     creditosT: "Créditos",
     ondeT: "Onde roda", ondeP: "No seu navegador. Nada pra instalar.",
     musicaT: "A sua música", musicaP: "Fica no seu aparelho. Nada sobe, não pede conta.",
@@ -41,7 +31,7 @@ const TEXTOS = {
     profundidade: "profundidade", tocar: "tocar", pausar: "pausar", ouvindo: "ouvindo",
     ver: "caminho", vivo: "ao vivo", salvar: "salvar", salvarDica: "salva a assinatura em PNG 4K", gravar: "gravar", parar: "parar", trocar: "outra música", cheia: "tela cheia",
     semMic: "o navegador não liberou o microfone", semGravar: "este navegador não grava o canvas",
-    ouvirCartao: "Ouvir", soltarSua: "Ou solta a sua", dica: "toca na árvore",
+    dica: "toca na árvore",
     inteira: "versão completa ↗", inteiraDica: "salva a assinatura e grava o vídeo na página inteira",
   },
 };
@@ -65,8 +55,6 @@ const $ = (q) => document.querySelector(q);
 // emoldura nem sempre deixa navegar dentro, e a versão completa é a mesma página sem o ?de=x.
 const cartao = document.documentElement.classList.contains("cartao");
 if (cartao) {
-  $("#discos .rotulo").textContent = T.ouvirCartao;
-  $("#soltar strong").textContent = T.soltarSua;
   for (const a of document.querySelectorAll("a[href^='http']")) a.target = "_blank";
 }
 const inteira = new URL(location.href);

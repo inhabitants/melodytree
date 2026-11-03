@@ -58,35 +58,29 @@
   .apresenta { position: relative; padding: 96px 0 72px; max-width: 36rem; }
   .nome { font-weight: 300; font-size: clamp(64px, 11.5vw, 156px); line-height: .9; letter-spacing: -.035em; margin: 0 0 28px -.04em; }
   .linha { font-size: clamp(26px, 3.2vw, 36px); line-height: 1.15; margin-bottom: 18px; }
-  .sub { color: var(--nevoa); max-width: 31rem; margin-bottom: 36px; }
-  .soltar { display: flex; flex-direction: column; gap: 2px; width: 100%; max-width: 27rem; padding: 20px 24px; border: 1px solid #3a3834; cursor: pointer; transition: border-color .2s, background .2s; }
+  .soltar { display: flex; flex-direction: column; gap: 2px; width: 100%; max-width: 27rem; padding: 12px 18px; border: 1px dashed #3a3834; cursor: pointer; transition: border-color .2s, background .2s; }
   .soltar:hover, .soltar.cima { border-color: var(--osso); background: rgba(236, 230, 218, .04); }
   .soltar:focus-within { outline: 1px solid var(--osso); outline-offset: 4px; }
-  .soltar strong { font-weight: 500; font-size: 23px; }
-  .soltar span { color: var(--nevoa); font-size: 16px; }
-  .outro { margin-top: 14px; font-size: 17px; color: var(--nevoa); }
-  .outro button, .faixas button { background: none; border: 0; padding: 0; color: var(--osso); font: inherit; cursor: pointer; text-decoration: underline; text-decoration-color: var(--galho); text-underline-offset: 4px; }
+  .soltar strong { font-weight: 500; font-size: 19px; }
+  .soltar span { color: var(--nevoa); font-size: 15px; }
+  .outro { margin-top: 12px; font-size: 16px; color: var(--nevoa); }
+  .outro button { background: none; border: 0; padding: 0; color: var(--osso); font: inherit; cursor: pointer; text-decoration: underline; text-decoration-color: var(--galho); text-underline-offset: 4px; }
   .outro button:hover { text-decoration-color: var(--osso); }
-  .discos { margin-top: 44px; }
-  .discos .rotulo { color: var(--nevoa); font-size: 17px; margin-bottom: 8px; }
-  .faixas { list-style: none; margin: 0; padding: 0; }
-  .faixas li { padding: 3px 0; }
-  .faixas button { text-decoration: none; font-size: 21px; color: var(--osso); transition: color .15s; text-align: left; }
-  .faixas button:hover { color: #fff; }
-  .faixas button.tocando { color: var(--brasa); }
+  /* a escolha vem logo depois do nome: cada faixa é um botão com play, e soltar a sua fica em segundo, tracejado */
+  .discos { margin: 8px 0 22px; }
+  .discos .rotulo { color: var(--nevoa); font-size: 17px; margin-bottom: 10px; }
+  .faixas { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; max-width: 27rem; }
+  .faixas button { width: 100%; display: flex; align-items: center; gap: 14px; padding: 10px 16px 10px 10px; border: 1px solid #3a3834; background: rgba(11, 11, 13, .45); color: var(--osso); font: inherit; font-size: 20px; line-height: 1.2; text-align: left; cursor: pointer; transition: border-color .2s, background .2s; }
+  .faixas button::before { content: ""; flex: none; width: 32px; height: 32px; border-radius: 50%; border: 1px solid var(--galho); background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M5.5 3.5v9l7-4.5z' fill='%23ece6da'/%3E%3C/svg%3E") center / 12px no-repeat; transition: border-color .2s; }
+  .faixas button:hover, .faixas button:focus-visible { border-color: var(--osso); background: rgba(236, 230, 218, .05); }
+  .faixas button:hover::before { border-color: var(--osso); }
+  .faixas button.tocando, .faixas button.tocando::before { border-color: var(--brasa); }
 
   /* as seções do encarte */
   .bloco { padding: 112px 0 0; }
   .bloco h2 { font-weight: 400; font-size: clamp(30px, 3.6vw, 42px); line-height: 1.1; letter-spacing: -.01em; margin: 0 0 12px; }
   .bloco .lede { color: var(--nevoa); max-width: 34rem; }
 
-  /* a canção do começo ao fim: a linha é a faixa tocando, e o fim acende */
-  .cancao { list-style: none; margin: 48px 0 0; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0 40px; border-top: 1px solid var(--galho); }
-  .cancao li { position: relative; padding-top: 30px; }
-  .cancao li::before { content: ""; position: absolute; top: -5px; left: 0; width: 9px; height: 9px; border-radius: 50%; background: var(--noite); border: 1px solid var(--galho); }
-  .cancao li:last-child::before { background: var(--brasa); border-color: var(--brasa); box-shadow: 0 0 14px rgba(224, 88, 58, .7); }
-  .cancao h3 { font-weight: 500; font-size: 23px; margin: 0 0 8px; }
-  .cancao p { color: var(--nevoa); max-width: 22rem; }
 
   /* três faixas, três raios: a assinatura é a peça, a legenda é a ficha do disco */
   .assinaturas { margin: 48px 0 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 32px; }
@@ -131,12 +125,11 @@
   @media (max-width: 860px) {
     html, body { font-size: 18px; }
     .topo { display: block; min-height: 0; }
-    .capa { width: 100%; height: 72svh; object-position: 50% 20%; -webkit-mask-image: linear-gradient(to bottom, #000 45%, transparent); mask-image: linear-gradient(to bottom, #000 45%, transparent); }
-    .apresenta { padding: 46svh 0 24px; }
+    .capa { width: 100%; height: 66svh; object-position: 50% 20%; -webkit-mask-image: linear-gradient(to bottom, #000 45%, transparent); mask-image: linear-gradient(to bottom, #000 45%, transparent); }
+    .apresenta { padding: 40svh 0 24px; }
+    .nome { margin-bottom: 14px; }
+    .faixas button { font-size: 19px; }
     .bloco { padding-top: 88px; }
-    .cancao { grid-template-columns: minmax(0, 1fr); border-top: 0; border-left: 1px solid var(--galho); margin-left: 4px; gap: 28px; }
-    .cancao li { padding: 0 0 0 24px; }
-    .cancao li::before { top: 9px; left: -5px; }
     /* as três assinaturas viram uma fileira que se folheia de lado */
     .assinaturas { grid-template-columns: none; grid-auto-flow: column; grid-auto-columns: 68%; gap: 18px; overflow-x: auto; scroll-snap-type: x mandatory; margin-right: -24px; padding-right: 24px; scrollbar-width: none; }
     .assinaturas figure { scroll-snap-align: start; }
@@ -147,16 +140,18 @@
   /* ---------- o cartão: a árvore num quadrado de 480 ----------
      Sai o encarte e o microfone (o iframe de fora não libera); as faixas de exemplo vêm primeiro porque são o toque
      que funciona em qualquer aparelho. Salvar e gravar baixam arquivo, que o iframe pode barrar: vão pra página inteira. */
-  .cartao .bloco, .cartao .fim, .cartao .sub, .cartao .outro, .cartao #salvar, .cartao #gravar { display: none; }
+  .cartao .bloco, .cartao .fim, .cartao .outro, .cartao #salvar, .cartao #gravar { display: none; }
   .cartao .topo { display: block; min-height: 100svh; }
   .cartao .capa { width: 100%; height: 100%; object-position: 50% 28%; opacity: .6; -webkit-mask-image: linear-gradient(to bottom, #000 40%, transparent); mask-image: linear-gradient(to bottom, #000 40%, transparent); }
-  .cartao .apresenta { display: flex; flex-direction: column; padding: 64px 0 24px; }
+  .cartao .apresenta { padding: 64px 0 24px; }
   .cartao .nome { font-size: 54px; margin-bottom: 6px; }
   .cartao .linha { font-size: 22px; margin-bottom: 18px; }
-  .cartao .discos { order: 1; margin: 0 0 16px; }
-  .cartao .discos .rotulo { font-size: 16px; margin-bottom: 4px; }
-  .cartao .faixas button { font-size: 19px; }
-  .cartao .soltar { order: 2; padding: 10px 14px; }
+  .cartao .discos { margin: 0 0 14px; }
+  .cartao .discos .rotulo { font-size: 16px; margin-bottom: 6px; }
+  .cartao .faixas { gap: 6px; }
+  .cartao .faixas button { font-size: 17px; padding: 6px 12px 6px 7px; gap: 11px; }
+  .cartao .faixas button::before { width: 26px; height: 26px; background-size: 10px; }
+  .cartao .soltar { padding: 8px 14px; }
   .cartao .soltar strong { font-size: 18px; }
   .cartao .soltar span { font-size: 14px; }
   .barra .inteira { display: none; padding: 4px 0; color: var(--galho); font-size: 13px; text-decoration: none; transition: color .15s; }
@@ -177,31 +172,21 @@
       <div class="apresenta">
         <h1 class="nome">Melodytree</h1>
         <p class="linha" data-t="titulo"></p>
-        <p class="sub" data-t="sub"></p>
+        <div class="discos" id="discos" hidden>
+          <p class="rotulo" data-t="ouvir"></p>
+          <ol class="faixas" id="faixas"></ol>
+        </div>
         <label class="soltar" id="soltar">
           <strong data-t="soltar"></strong>
           <span data-t="soltarDica"></span>
           <input id="arquivo" type="file" accept="audio/*">
         </label>
         <p class="outro"><span data-t="ou"></span> <button id="mic" data-t="microfone"></button></p>
-        <div class="discos" id="discos" hidden>
-          <p class="rotulo" data-t="ouvir"></p>
-          <ol class="faixas" id="faixas"></ol>
-        </div>
       </div>
     </div>
   </header>
 
   <div class="miolo">
-    <section class="bloco">
-      <h2 data-t="cancaoT"></h2>
-      <ol class="cancao">
-        <li><h3 data-t="comecoT"></h3><p data-t="comecoP"></p></li>
-        <li><h3 data-t="refraoT"></h3><p data-t="refraoP"></p></li>
-        <li><h3 data-t="fimT"></h3><p data-t="fimP"></p></li>
-      </ol>
-    </section>
-
 
     <section class="bloco">
       <h2 data-t="creditosT"></h2>

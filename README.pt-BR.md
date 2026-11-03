@@ -67,8 +67,8 @@ mostra uma de cada primeiro.
 
 ## Embutir
 
-Dentro de iframe a página vira cartão sozinha: as faixas vêm primeiro, o encarte
-sai, e salvar e gravar passam pra um link "versão completa", porque baixar
+Dentro de iframe a página vira cartão sozinha: três faixas e o soltar, sem os
+créditos, e salvar e gravar passam pra um link "versão completa", porque baixar
 arquivo de dentro do iframe pode ser barrado. `?de=x` força o cartão fora do
 iframe, pra testar.
 
