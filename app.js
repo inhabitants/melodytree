@@ -132,8 +132,8 @@ fetch("musicas/lista.json").then((r) => (r.ok ? r.json() : null)).then((lista) =
   const todas = embaralhar([...(lista?.faixas || [])]);
   if (!todas.length) return;
   // um título em português, um em inglês e um em francês entram primeiro; o resto completa, e a ordem se embaralha
-  // de novo pra a língua não cair sempre na mesma linha
-  const quantas = cartao ? 3 : 5;
+  // de novo pra a língua não cair sempre na mesma linha. No cartão e no celular são só essas três
+  const quantas = cartao || matchMedia("(max-width: 860px)").matches ? 3 : 5;
   const escolhidas = [];
   for (const l of ["pt", "en", "fr"]) {
     const f = todas.find((x) => x.lingua === l);
