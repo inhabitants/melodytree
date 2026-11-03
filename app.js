@@ -17,7 +17,7 @@ const TEXTOS = {
     profundidade: "depth", tocar: "play", pausar: "pause", ouvindo: "listening",
     ver: "path", vivo: "live", salvar: "save", salvarDica: "save the signature as a 4K PNG", gravar: "record", parar: "stop", trocar: "another song", cheia: "fullscreen",
     semMic: "the browser did not give the microphone", semGravar: "this browser cannot record the canvas",
-    dica: "tap the tree",
+    dica: "tap the tree", outraEscolha: "or pick another song",
     inteira: "full version ↗", inteiraDica: "save the signature and record the video on the full page",
   },
   pt: {
@@ -31,7 +31,7 @@ const TEXTOS = {
     profundidade: "profundidade", tocar: "tocar", pausar: "pausar", ouvindo: "ouvindo",
     ver: "caminho", vivo: "ao vivo", salvar: "salvar", salvarDica: "salva a assinatura em PNG 4K", gravar: "gravar", parar: "parar", trocar: "outra música", cheia: "tela cheia",
     semMic: "o navegador não liberou o microfone", semGravar: "este navegador não grava o canvas",
-    dica: "toca na árvore",
+    dica: "toca na árvore", outraEscolha: "ou escolhe outra música",
     inteira: "versão completa ↗", inteiraDica: "salva a assinatura e grava o vídeo na página inteira",
   },
 };
@@ -154,6 +154,25 @@ fetch("musicas/lista.json").then((r) => (r.ok ? r.json() : null)).then((lista) =
     faixas.appendChild(li);
   }
   $("#discos").hidden = false;
+
+  // A faixa de abertura (`inicial` na lista): a página abre pronta, com a árvore crescendo no vídeo do fundo e um
+  // play grande com o nome dela; um toque em qualquer lugar começa, e "escolhe outra" abre a lista. Navegador
+  // nenhum deixa tocar som antes do primeiro toque, salvo quem já liberou o site: esse entra tocando direto.
+  const inicial = lista.inicial && todas.find((f) => f.titulo === lista.inicial);
+  if (!inicial) return;
+  const porta = $("#porta");
+  porta.classList.add("pronta");
+  $("#comecaNome").textContent = inicial.titulo;
+  const comecar = () => {
+    porta.classList.remove("pronta");
+    tocarUrl(inicial.arquivo, inicial.titulo).catch(() => {});
+  };
+  porta.addEventListener("click", (e) => {
+    if (porta.classList.contains("pronta") && !e.target.closest("#comecaOutra, a")) comecar();
+  });
+  $("#comecaOutra").onclick = () => porta.classList.remove("pronta");
+  garantirSom();
+  if (som.ctx.state === "running") comecar();
 }).catch(() => {});
 
 // ---------- a porta (o primeiro contato) ----------

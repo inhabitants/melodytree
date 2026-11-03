@@ -9,7 +9,7 @@
 
 ## Customize
 
-- Playlist: create `musicas/lista.json` next to `index.html`, shaped `{ "faixas": [ { "titulo": "...", "arquivo": "https://...mp3", "lingua": "en" } ] }`. Up to five tracks show on the start screen (three in the embed). Audio on another domain must send CORS headers.
+- Playlist: create `musicas/lista.json` next to `index.html`, shaped `{ "inicial": "...", "faixas": [ { "titulo": "...", "arquivo": "https://...mp3", "lingua": "en" } ] }`. `inicial` (optional) opens the page ready on that track with one big play. Up to five tracks show on the start screen (three in the embed). Audio on another domain must send CORS headers.
 - Embed: inside an iframe the page becomes a compact card automatically; `?de=x` forces the card for testing. Suggested iframe: 480x480 with `allow="autoplay; fullscreen"`.
 - X player card: the `og:image` and `twitter:*` meta tags in `index.html` point to the public demo. Change them to the address where the copy is hosted.
 - Signature mark: in `app.js`, `criarArvore({ marca: ["Bold", ".light"] })` stamps a name in the corner of the PNG; leave it out for no mark.

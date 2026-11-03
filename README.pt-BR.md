@@ -55,6 +55,7 @@ faixas dele (três no embed), sorteadas a cada visita:
 
 ```json
 {
+  "inicial": "Nome da faixa",
   "faixas": [
     { "titulo": "Nome da faixa", "arquivo": "https://exemplo.com/faixa.mp3", "lingua": "pt" }
   ]
@@ -63,7 +64,9 @@ faixas dele (três no embed), sorteadas a cada visita:
 
 Faixa em outro domínio precisa mandar CORS, senão o analisador ouve silêncio.
 `lingua` é opcional: quando os títulos vêm em mais de uma língua, a entrada
-mostra uma de cada primeiro.
+mostra uma de cada primeiro. `inicial` também: com ele, a página abre pronta
+naquela faixa, um play grande sobre a árvore crescendo, e um toque em qualquer
+lugar começa. Navegador que já liberou som pro site pula o toque.
 
 ## Embutir
 

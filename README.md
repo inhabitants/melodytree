@@ -57,6 +57,7 @@ five of its tracks (three in the embed), picked at random on every visit:
 
 ```json
 {
+  "inicial": "Song title",
   "faixas": [
     { "titulo": "Song title", "arquivo": "https://example.com/song.mp3", "lingua": "en" }
   ]
@@ -65,7 +66,10 @@ five of its tracks (three in the embed), picked at random on every visit:
 
 Tracks on another domain must send CORS headers, or the analyser hears silence.
 `lingua` is optional: when the titles come in several languages, the start
-screen shows one of each first.
+screen shows one of each first. `inicial` is optional too: with it, the page
+opens ready on that track, one big play over the growing tree, and a tap
+anywhere starts it. Browsers that already allow the site to play sound skip
+the tap.
 
 ## Embed it
 
